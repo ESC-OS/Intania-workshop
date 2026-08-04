@@ -1,0 +1,142 @@
+/* =====================================================
+   SEARCH PAGE — standalone, mobile-first layout
+   (reuses style.css's color tokens, .btn/.spinner/.alert/.card
+   utilities, but not its dashboard #app/.page-header/.nav shell)
+   ===================================================== */
+
+body { background: var(--bg); }
+
+/* -----------------------------------------------------
+   HERO
+   ----------------------------------------------------- */
+.page-hero {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary) 60%, var(--primary-dark));
+  color: #fff;
+  padding: 2.5rem 1.25rem 2.75rem;
+  text-align: center;
+}
+.page-hero-logo {
+  display: block;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto .9rem;
+  border-radius: var(--radius-md);
+  background: #fff;
+  padding: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.page-hero-title {
+  font-size: clamp(1.05rem, 4vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.5;
+  max-width: 620px;
+  margin: 0 auto;
+  letter-spacing: -.01em;
+}
+
+/* -----------------------------------------------------
+   CONTENT — single centered column at every width
+   ----------------------------------------------------- */
+.page-content {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.search-box {
+  display: flex;
+  gap: .6rem;
+  background: var(--surface);
+  padding: .5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: .75rem .9rem;
+  font-size: 1rem;
+  color: var(--text);
+  font-family: inherit;
+}
+.search-box input:focus { outline: none; }
+.search-box input::placeholder { color: var(--text-subtle); }
+.search-box .btn { flex-shrink: 0; padding: .75rem 1.4rem; }
+
+.search-status {
+  text-align: center;
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+  .search-box { flex-direction: column; padding: .6rem; }
+  .search-box .btn { width: 100%; justify-content: center; }
+}
+
+/* -----------------------------------------------------
+   RESULTS
+   ----------------------------------------------------- */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.result-card { display: flex; flex-direction: column; gap: .9rem; }
+
+.result-card-top { display: flex; align-items: center; gap: .75rem; }
+
+.result-avatar {
+  width: 46px; height: 46px; border-radius: var(--radius-full);
+  background: var(--primary-bg); color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.05rem; flex-shrink: 0;
+}
+
+.result-name-block { min-width: 0; }
+.result-name { font-weight: 700; font-size: .95rem; line-height: 1.3; }
+.result-nickname { font-size: .8rem; color: var(--text-muted); }
+
+.result-badges { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+.round-badge {
+  display: inline-flex; align-items: center;
+  padding: .18em .7em; border-radius: var(--radius-full);
+  font-size: .72rem; font-weight: 600;
+  background: var(--info-bg); color: var(--info);
+}
+
+.group-badge {
+  display: inline-flex; align-items: center;
+  padding: .18em .7em; border-radius: var(--radius-full);
+  font-size: .72rem; font-weight: 700;
+}
+
+.major-badge {
+  display: inline-flex; align-items: center;
+  padding: .18em .7em; border-radius: var(--radius-full);
+  font-size: .72rem; font-weight: 600;
+  background: #f2f2f7; color: var(--text-muted);
+}
+
+.result-meta { display: flex; flex-direction: column; gap: .4rem; }
+.result-meta-row {
+  display: flex; gap: .5rem; font-size: .84rem;
+  color: var(--text); align-items: baseline;
+}
+.result-meta-label {
+  color: var(--text-subtle); min-width: 78px; flex-shrink: 0;
+}
+.result-meta-value { word-break: break-word; }
+
+@media (max-width: 480px) {
+  .results-grid { grid-template-columns: 1fr; }
+}

@@ -1,11 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เช็ครายชื่อสั่งเสื้อ — Chula Intania Workshop</title>
+  <link rel="icon" type="image/png" href="public/ESC_logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/search.css">
 </head>
 <body>
-    
+  <header class="page-hero">
+    <img src="public/ESC_logo.png" alt="กวศ." class="page-hero-logo">
+    <h1 class="page-hero-title">ระบบเช็ครายชื่อการสั่งซื้อเสื้อ Chula Intania Workshop รอบที่ 1 และ 2</h1>
+  </header>
+
+  <main class="page-content">
+    <form id="search-form" class="search-box">
+      <input
+        id="search-input"
+        type="search"
+        inputmode="search"
+        placeholder="ค้นหาชื่อ, ชื่อเล่น, รหัสนิสิต, เบอร์โทร..."
+        autocomplete="off"
+      >
+      <button type="submit" id="search-btn" class="btn btn-primary">ค้นหา</button>
+    </form>
+    <p id="search-status" class="search-status"></p>
+
+    <div id="results"></div>
+  </main>
+
+  <script src="js/search.js"></script>
 </body>
 </html>

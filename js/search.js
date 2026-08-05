@@ -45,7 +45,7 @@ async function runSearch(query) {
 
   setLoading(true);
   try {
-    const url = `${APPS_SCRIPT_URL}?keyword=${encodeURIComponent(query)}`;
+    const url = `${APPS_SCRIPT_URL}?action=search&keyword=${encodeURIComponent(query)}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`คำขอล้มเหลว (HTTP ${res.status})`);
     const payload = await res.json();

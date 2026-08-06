@@ -1,16 +1,21 @@
 // ---------------------------------------------------------------
 // Backend contract (coordinate with the Apps Script side):
-//   Request:  GET APPS_SCRIPT_URL?keyword=text  (via doGet(e), e.parameter.keyword)
-//   Response: JSON array of row objects, same shape as
-//             example_respone.json, e.g.:
-//             [{ "Round": "1", "ที่อยู่อีเมล": "...", "รหัสนิสิต (Student ID)": "...", ... }]
-//             (an object like { data: [...] } or { results: [...] } is
-//             also accepted, see readRows() below)
+//   Search:      GET APPS_SCRIPT_URL?action=search&keyword=text
+//                Response: JSON array of row objects, same shape as
+//                example_respone.json, e.g.:
+//                [{ "Order-Round": "1-0019", "ที่อยู่อีเมล": "...", ... }]
+//                (an object like { data: [...] } or { results: [...] } is
+//                also accepted, see readRows() below)
+//   View order:  GET APPS_SCRIPT_URL?action=order&order=<order-round>
+//                Response: JSON object mapping size label -> quantity, e.g.
+//                { "S": 1, "M": 3, "L": 2, "XL": 0 }
+//                (an object like { data: {...} } is also accepted, see
+//                readSizes() below)
 // ---------------------------------------------------------------
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZ8nQ2KH2Ets8WSQphOsRik9mDp8ydOoxvVWk1cuei3gvPfdFhs8cuYvNQlwZBTB-nvQ/exec'; // TODO: paste the deployed Apps Script /exec URL here
 
 const FIELD = {
-  round: 'Round',
+  round: 'Order-Round',
   email: 'ที่อยู่อีเมล',
   studentId: 'รหัสนิสิต (Student ID)',
   year: 'ชั้นปี (Year of Study)',
@@ -30,6 +35,12 @@ const resultsEl = document.getElementById('results');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   runSearch(input.value.trim());
+});
+
+resultsEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('.btn-view-order');
+  if (!btn) return;
+  showOrderModal(btn.dataset.order);
 });
 
 async function runSearch(query) {
@@ -92,7 +103,8 @@ function rowToCard(row) {
   const firstName = row[FIELD.firstName] || '';
   const lastName = row[FIELD.lastName] || '';
   const nickname = row[FIELD.nickname] || '';
-  const round = row[FIELD.round] || '';
+  const orderRound = row[FIELD.round] || '';
+  const round = orderRound.split('-')[0];
   const group = row[FIELD.group] || '';
   const major = row[FIELD.major] || '';
   const initial = (nickname || firstName || '?').charAt(0);
@@ -108,7 +120,7 @@ function rowToCard(row) {
       </div>
       <div class="result-badges">
         ${round ? `<span class="round-badge">รอบ ${escapeHtml(round)}</span>` : ''}
-        ${group ? `<span class="group-badge" style="${groupBadgeStyle(group)}">กลุ่ม ${escapeHtml(group)}</span>` : ''}
+        ${group ? `<span class="group-badge">กลุ่ม ${escapeHtml(group)}</span>` : ''}
         ${major ? `<span class="major-badge">${escapeHtml(major)}</span>` : ''}
       </div>
       <div class="result-meta">
@@ -116,6 +128,11 @@ function rowToCard(row) {
         ${metaRow('ชั้นปี', row[FIELD.year])}
         ${metaRow('อีเมล', row[FIELD.email])}
       </div>
+      ${orderRound ? `
+        <div class="result-actions">
+          <button type="button" class="btn btn-secondary btn-view-order" data-order="${escapeHtml(orderRound)}">ดูคำสั่งซื้อ</button>
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -130,11 +147,69 @@ function metaRow(label, value) {
   `;
 }
 
-// Deterministic color per group letter so the same group always
-// gets the same badge color, without hardcoding a palette per letter.
-function groupBadgeStyle(group) {
-  const hue = (group.charCodeAt(0) * 47) % 360;
-  return `background:hsl(${hue},70%,94%);color:hsl(${hue},55%,32%);`;
+async function showOrderModal(orderNumber) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title">คำสั่งซื้อ ${escapeHtml(orderNumber)}</div>
+      <div class="modal-body"><div class="spinner">กำลังโหลด...</div></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary modal-close">ปิด</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const close = () => {
+    overlay.remove();
+    document.removeEventListener('keydown', onKeydown);
+  };
+  function onKeydown(e) {
+    if (e.key === 'Escape') close();
+  }
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+  overlay.querySelector('.modal-close').addEventListener('click', close);
+  document.addEventListener('keydown', onKeydown);
+
+  const bodyEl = overlay.querySelector('.modal-body');
+  try {
+    const url = `${APPS_SCRIPT_URL}?action=order&order=${encodeURIComponent(orderNumber)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`คำขอล้มเหลว (HTTP ${res.status})`);
+    const payload = await res.json();
+    bodyEl.innerHTML = renderSizeTable(readSizes(payload));
+  } catch (err) {
+    bodyEl.innerHTML = `<div class="alert alert-error">โหลดข้อมูลไม่สำเร็จ: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function readSizes(payload) {
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+    return payload.data && typeof payload.data === 'object' ? payload.data : payload;
+  }
+  return {};
+}
+
+function renderSizeTable(sizes) {
+  const entries = Object.entries(sizes).filter(([, qty]) => Number(qty) !== 0);
+  if (!entries.length) {
+    return `<span class="empty-text">ไม่พบข้อมูลไซส์สำหรับคำสั่งซื้อนี้</span>`;
+  }
+  return `
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>ไซส์</th><th>จำนวน</th></tr></thead>
+        <tbody>
+          ${entries.map(([size, qty]) => `
+            <tr><td>${escapeHtml(size)}</td><td>${escapeHtml(String(qty))}</td></tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function escapeHtml(str) {

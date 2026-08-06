@@ -118,6 +118,7 @@ body { background: var(--bg); }
   display: inline-flex; align-items: center;
   padding: .18em .7em; border-radius: var(--radius-full);
   font-size: .72rem; font-weight: 700;
+  background: var(--primary-bg); color: var(--primary);
 }
 
 .major-badge {
@@ -136,6 +137,9 @@ body { background: var(--bg); }
   color: var(--text-subtle); min-width: 78px; flex-shrink: 0;
 }
 .result-meta-value { word-break: break-word; }
+
+.result-actions { margin-top: .15rem; }
+.result-actions .btn { width: 100%; justify-content: center; }
 
 @media (max-width: 480px) {
   .results-grid { grid-template-columns: 1fr; }

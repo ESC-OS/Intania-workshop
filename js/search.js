@@ -126,7 +126,6 @@ function rowToCard(row) {
       <div class="result-meta">
         ${metaRow('รหัสนิสิต', row[FIELD.studentId])}
         ${metaRow('ชั้นปี', row[FIELD.year])}
-        ${metaRow('อีเมล', row[FIELD.email])}
       </div>
       ${orderRound ? `
         <div class="result-actions">

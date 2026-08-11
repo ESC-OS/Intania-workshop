@@ -120,7 +120,7 @@ function rowToCard(row) {
       </div>
       <div class="result-badges">
         ${round ? `<span class="round-badge">รอบ ${escapeHtml(round)}</span>` : ''}
-        ${group ? `<span class="group-badge">กลุ่ม ${escapeHtml(group)}</span>` : ''}
+        ${group ? `<span class="group-badge">กรูป ${escapeHtml(group)}</span>` : ''}
         ${major ? `<span class="major-badge">${escapeHtml(major)}</span>` : ''}
       </div>
       <div class="result-meta">

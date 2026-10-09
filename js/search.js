@@ -12,7 +12,7 @@
 //                (an object like { data: {...} } is also accepted, see
 //                readSizes() below)
 // ---------------------------------------------------------------
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZ8nQ2KH2Ets8WSQphOsRik9mDp8ydOoxvVWk1cuei3gvPfdFhs8cuYvNQlwZBTB-nvQ/exec'; // TODO: paste the deployed Apps Script /exec URL here
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyh89Y3GIQkA24NhRlvdRB3vArsLLMxt0rHFkIEwzE6Qr38FuzRpk55dPjefxk2vYVl/exec'; // TODO: paste the deployed Apps Script /exec URL here
 
 const FIELD = {
   round: 'Order-Round',

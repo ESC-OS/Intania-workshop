@@ -1390,3 +1390,11 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
    ITEMS GRID — desktop: larger minimum cell
    ===================================================== */
 .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+
+.divider {
+    border: none;
+    height: 2px;
+    background-color: #9e2235;
+    max-width: 800px;
+    margin: 40px auto;
+}
